@@ -25,12 +25,12 @@ function Home() {
           <div className="App">
             {!isPlay && <StartMenu />}
             <Score />
-            <Mario />
             <Brick />
             <Cloud />
             <Sun />
             <Bird />
             <Obstacle />
+            <Mario />
           </div>
         </>
       )}

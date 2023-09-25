@@ -49,6 +49,7 @@ const Obstacle = () => {
     }, 100);
   }, [dispatch]);
 
+  // increase speed
   useEffect(() => {
     if (speed >= 0) {
       setTimeout(() => {

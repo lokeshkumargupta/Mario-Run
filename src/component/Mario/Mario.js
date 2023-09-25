@@ -13,6 +13,7 @@ import {
 } from "../../config/redux/marioSlice";
 import { setPlay, setDie, setScore } from "../../config/redux/engineSlice";
 import dieAudio from "../../asset/audio/mario-died.mp3";
+import classNames from "classnames";
 
 const Mario = () => {
   const marioRef = useRef();
@@ -42,23 +43,22 @@ const Mario = () => {
   const jump = useMemo(() => {
     return new Audio(jumpAudio);
   }, []);
-
-  // Die
+  // Die audio
   const marioDie = useMemo(() => {
     return new Audio(dieAudio);
   }, []);
-
+  // background audio
   const bgMusic = useMemo(() => {
     return new Audio(backgroundMusic);
   }, []);
 
-  // Handling key press event.
+  // Handling key press event
   const handleKey = useCallback(
     (e) => {
-      if (e.code === "Enter" && !isPlay && !die && !loadingScreen) {
+      if (e.code === "Enter" && !isPlay && !die && !loadingScreen) { // start playing
         dispatch(setPlay(true));
       }
-      if (
+      if ( // jump now
         mario_jump === false &&
         e.code === "Space" &&
         isPlay &&
@@ -66,11 +66,11 @@ const Mario = () => {
         !loadingScreen
       ) {
         dispatch(marioJumping(true));
-        jump.play();
-        setTimeout(() => {
+        jump.play(); // play jump audio
+        setTimeout(() => { // on jump complete
           dispatch(marioJumping(false));
           jump.pause();
-          jump.currentTime = 0;
+          jump.currentTime = 0; // reset audio
         }, 400);
       }
     },
@@ -142,26 +142,20 @@ const Mario = () => {
       bgMusic.pause();
       bgMusic.currentTime = 0;
     }
+    return () => document.removeEventListener("keydown", handleKey);
   }, [handleKey, dispatch, bgMusic, isPlay]);
 
   return (
     <div className="mario-container">
-      {!die && (
-        <img
-          src={MarioCharacter}
-          alt=""
-          className={`mario ${mario_jump ? "jump" : ""}`}
-          ref={marioRef}
-        />
-      )}
-      {die && (
-        <img
-          src={MarioCharacter}
-          alt=""
-          className={`mario ${die ? "die" : ""}`}
-          ref={marioRef}
-        />
-      )}
+      <img
+        src={MarioCharacter}
+        alt=""
+        className={classNames("mario", {
+          "die": die,
+          "jump": mario_jump
+        })}
+        ref={marioRef}
+      />
     </div>
   );
 };
