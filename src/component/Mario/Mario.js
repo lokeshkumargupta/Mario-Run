@@ -11,7 +11,7 @@ import {
   marioTop,
   marioWidth,
 } from "../../config/redux/marioSlice";
-import { setReady, setDie, setScore } from "../../config/redux/engineSlice";
+import { setPlay, setDie, setScore } from "../../config/redux/engineSlice";
 import dieAudio from "../../asset/audio/mario-died.mp3";
 
 const Mario = () => {
@@ -56,7 +56,7 @@ const Mario = () => {
   const handleKey = useCallback(
     (e) => {
       if (e.code === "Enter" && !isPlay && !die && !loadingScreen) {
-        dispatch(setReady(true));
+        dispatch(setPlay(true));
       }
       if (
         mario_jump === false &&
@@ -86,7 +86,7 @@ const Mario = () => {
     ) {
       dispatch(setDie(true));
       marioDie.play();
-      dispatch(setReady(false));
+      dispatch(setPlay(false));
       setTimeout(() => {
         dispatch(setDie(false));
       }, 2000);
@@ -103,7 +103,7 @@ const Mario = () => {
     ) {
       dispatch(setDie(true));
       marioDie.play();
-      dispatch(setReady(false));
+      dispatch(setPlay(false));
       setTimeout(() => {
         dispatch(setDie(false));
       }, 2000);

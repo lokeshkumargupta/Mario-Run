@@ -11,7 +11,7 @@ export const engineSlice = createSlice({
     loadingScreen: true,
   },
   reducers: {
-    setReady: (state, action) => {
+    setPlay: (state, action) => {
       state.play = action.payload;
     },
     setDie: (state, action) => {
@@ -33,7 +33,7 @@ export const engineSlice = createSlice({
 });
 
 export const {
-  setReady,
+  setPlay,
   setDie,
   setSpeed,
   setScore,
