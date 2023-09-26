@@ -24,7 +24,7 @@ const Score = () => {
   }, [dispatch, play, score, lastScore, die]);
   return (
     <div className="score-container">
-      {play && <p className="score">Score: {play ? score : lastScore}</p>}
+      <p className="score">Score: {play ? score : lastScore}</p>
     </div>
   );
 };

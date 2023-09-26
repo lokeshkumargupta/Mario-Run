@@ -1,6 +1,6 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 const documentReadyState_COMPLETE = "complete";
-const eventType_LOAD = "load"
+const eventType_LOAD = "load";
 
 export default function useDocumentReady() {
   const [isReady, setIsReady] = useState(false);

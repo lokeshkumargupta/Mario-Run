@@ -4,16 +4,14 @@ import { useEffect, useRef, useCallback, useMemo } from "react";
 import jumpAudio from "../../asset/audio/mario-jump.mp3";
 import backgroundMusic from "../../asset/audio/running-about.mp3";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  marioJumping,
-  marioHeight,
-  marioLeft,
-  marioTop,
-  marioWidth,
-} from "../../config/redux/marioSlice";
+import { marioJumping, marioPosition } from "../../config/redux/marioSlice";
 import { setPlay, setDie, setScore } from "../../config/redux/engineSlice";
 import dieAudio from "../../asset/audio/mario-died.mp3";
 import classNames from "classnames";
+const keyCode = {
+  ENTER: "Enter",
+  SPACE: "Space",
+};
 
 const Mario = () => {
   const marioRef = useRef();
@@ -24,20 +22,11 @@ const Mario = () => {
   const isPlay = useSelector((state) => state.engine.play);
   // Mario positions & jump
   const mario_jump = useSelector((state) => state.mario.jumping);
-  const mario_height = useSelector((state) => state.mario.height);
-  const mario_left = useSelector((state) => state.mario.left);
-  const mario_top = useSelector((state) => state.mario.top);
-  const mario_width = useSelector((state) => state.mario.width);
+  const mario = useSelector((state) => state.mario.position);
   // Obstacle1 positions
-  const obs1_height = useSelector((state) => state.obstacle.obs1Height);
-  const obs1_left = useSelector((state) => state.obstacle.obs1Left);
-  const obs1_top = useSelector((state) => state.obstacle.obs1Top);
-  const obs1_width = useSelector((state) => state.obstacle.obs1Width);
+  const obs1 = useSelector((state) => state.obstacle.obstacle1);
   // Obstacle2 positions
-  const obs2_height = useSelector((state) => state.obstacle.obs2Height);
-  const obs2_left = useSelector((state) => state.obstacle.obs2Left);
-  const obs2_top = useSelector((state) => state.obstacle.obs2Top);
-  const obs2_width = useSelector((state) => state.obstacle.obs2Width);
+  const obs2 = useSelector((state) => state.obstacle.obstacle2);
 
   // Jump audio
   const jump = useMemo(() => {
@@ -55,19 +44,22 @@ const Mario = () => {
   // Handling key press event
   const handleKey = useCallback(
     (e) => {
-      if (e.code === "Enter" && !isPlay && !die && !loadingScreen) { // start playing
+      if (e.code === keyCode.ENTER && !isPlay && !die && !loadingScreen) {
+        // start playing
         dispatch(setPlay(true));
       }
-      if ( // jump now
-        mario_jump === false &&
-        e.code === "Space" &&
+      if (
+        // jump now
+        !mario_jump &&
+        e.code === keyCode.SPACE &&
         isPlay &&
         !die &&
         !loadingScreen
       ) {
         dispatch(marioJumping(true));
         jump.play(); // play jump audio
-        setTimeout(() => { // on jump complete
+        setTimeout(() => {
+          // on jump complete
           dispatch(marioJumping(false));
           jump.pause();
           jump.currentTime = 0; // reset audio
@@ -78,12 +70,7 @@ const Mario = () => {
   );
 
   useEffect(() => {
-    if (
-      mario_left < obs1_left + obs1_width &&
-      mario_left + mario_width > obs1_left &&
-      mario_top < obs1_top + obs1_height &&
-      mario_top + mario_height > obs1_top
-    ) {
+    const gameOver = () => {
       dispatch(setDie(true));
       marioDie.play();
       dispatch(setPlay(false));
@@ -93,48 +80,32 @@ const Mario = () => {
       setTimeout(() => {
         dispatch(setScore(0));
       }, 100);
+    };
+    // check if mario & obstacles collides
+    const hasBumped = (obs) => {
+      return (
+        mario.left < obs.left + obs.width &&
+        mario.left + mario.width > obs.left &&
+        mario.top < obs.top + obs.height &&
+        mario.top + mario.height > obs.top
+      );
+    };
+    if (hasBumped(obs1) || hasBumped(obs2)) {
+      gameOver();
     }
-
-    if (
-      mario_left < obs2_left + obs2_width &&
-      mario_left + mario_width > obs2_left &&
-      mario_top < obs2_top + obs2_height &&
-      mario_top + mario_height > obs2_top
-    ) {
-      dispatch(setDie(true));
-      marioDie.play();
-      dispatch(setPlay(false));
-      setTimeout(() => {
-        dispatch(setDie(false));
-      }, 2000);
-      setTimeout(() => {
-        dispatch(setScore(0));
-      }, 100);
-    }
-  }, [
-    mario_left,
-    obs1_left,
-    obs1_width,
-    mario_width,
-    mario_top,
-    obs1_top,
-    obs1_height,
-    mario_height,
-    dispatch,
-    marioDie,
-    obs2_left,
-    obs2_width,
-    obs2_top,
-    obs2_height,
-  ]);
+  }, [mario, obs1, dispatch, marioDie, obs2]);
 
   // Monitor key press.
   useEffect(() => {
     document.addEventListener("keydown", handleKey);
-    dispatch(marioHeight(marioRef.current.getBoundingClientRect().height));
-    dispatch(marioLeft(marioRef.current.getBoundingClientRect().left));
-    dispatch(marioTop(marioRef.current.getBoundingClientRect().top));
-    dispatch(marioWidth(marioRef.current.getBoundingClientRect().width));
+    dispatch(
+      marioPosition({
+        height: marioRef?.current?.getBoundingClientRect().height,
+        left: marioRef?.current?.getBoundingClientRect().left,
+        top: marioRef?.current?.getBoundingClientRect().top,
+        width: marioRef?.current?.getBoundingClientRect().width,
+      }),
+    );
 
     if (isPlay) {
       bgMusic.play();
@@ -151,8 +122,8 @@ const Mario = () => {
         src={MarioCharacter}
         alt=""
         className={classNames("mario", {
-          "die": die,
-          "jump": mario_jump
+          die: die,
+          jump: mario_jump,
         })}
         ref={marioRef}
       />

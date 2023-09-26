@@ -6,7 +6,7 @@ const Brick = () => {
   const isReady = useDocumentReady();
   return (
     <div className="brick-container">
-      <div className={classNames("brick", {"brick-animate": isReady })} />
+      <div className={classNames("brick", { "brick-animate": isReady })} />
     </div>
   );
 };

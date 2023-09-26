@@ -6,7 +6,7 @@ const Cloud = () => {
   const isReady = useDocumentReady();
   return (
     <div className="cloud-container">
-      <div className={classNames("cloud", {"cloud-animate": isReady })}></div>
+      <div className={classNames("cloud", { "cloud-animate": isReady })}></div>
     </div>
   );
 };

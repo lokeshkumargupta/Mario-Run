@@ -6,7 +6,7 @@ const Bird = () => {
   const isReady = useDocumentReady();
   return (
     <div className="bird-container">
-      <div className={classNames("bird", {"bird-animate": isReady })}></div>
+      <div className={classNames("bird", { "bird-animate": isReady })}></div>
     </div>
   );
 };

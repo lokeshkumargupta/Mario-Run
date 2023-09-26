@@ -1,18 +1,9 @@
 import "./Obstacle.css";
-import obstacle1 from "../../asset/img/goombla.gif";
-import obstacle2 from "../../asset/img/koopa.gif";
+import goombla from "../../asset/img/goombla.gif";
+import koopa from "../../asset/img/koopa.gif";
 import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  obstacle1Height,
-  obstacle1Left,
-  obstacle1Top,
-  obstacle1Width,
-  obstacle2Height,
-  obstacle2Left,
-  obstacle2Top,
-  obstacle2Width,
-} from "../../config/redux/obstacleSlice";
+import { obstacle1, obstacle2 } from "../../config/redux/obstacleSlice";
 import { setSpeed } from "../../config/redux/engineSlice";
 import classNames from "classnames";
 
@@ -24,30 +15,27 @@ const Obstacle = () => {
   const obstacle2Ref = useRef();
 
   useEffect(() => {
-    setInterval(() => {
-      dispatch(
-        obstacle1Height(obstacle1Ref.current.getBoundingClientRect().height),
-      );
-      dispatch(
-        obstacle1Left(obstacle1Ref.current.getBoundingClientRect().left),
-      );
-      dispatch(obstacle1Top(obstacle1Ref.current.getBoundingClientRect().top));
-      dispatch(
-        obstacle1Width(obstacle1Ref.current.getBoundingClientRect().width),
-      );
-
-      dispatch(
-        obstacle2Height(obstacle2Ref.current.getBoundingClientRect().height),
-      );
-      dispatch(
-        obstacle2Left(obstacle2Ref.current.getBoundingClientRect().left),
-      );
-      dispatch(obstacle2Top(obstacle2Ref.current.getBoundingClientRect().top));
-      dispatch(
-        obstacle2Width(obstacle2Ref.current.getBoundingClientRect().width),
-      );
-    }, 100);
-  }, [dispatch]);
+    if (isPlay) {
+      setInterval(() => {
+        dispatch(
+          obstacle1({
+            height: obstacle1Ref?.current?.getBoundingClientRect().height,
+            left: obstacle1Ref?.current?.getBoundingClientRect().left,
+            top: obstacle1Ref?.current?.getBoundingClientRect().top,
+            width: obstacle1Ref?.current?.getBoundingClientRect().width,
+          }),
+        );
+        dispatch(
+          obstacle2({
+            height: obstacle2Ref?.current?.getBoundingClientRect().height,
+            left: obstacle2Ref?.current?.getBoundingClientRect().left,
+            top: obstacle2Ref?.current?.getBoundingClientRect().top,
+            width: obstacle2Ref?.current?.getBoundingClientRect().width,
+          }),
+        );
+      }, 100);
+    }
+  }, [dispatch, isPlay]);
 
   // increase speed
   useEffect(() => {
@@ -61,9 +49,9 @@ const Obstacle = () => {
   return (
     <div className="obstacles-container">
       <img
-        src={obstacle1}
+        src={goombla}
         alt=""
-        className={classNames("obstacle1", {"obstacle1-move": isPlay})}
+        className={classNames("obstacle1", { "obstacle1-move": isPlay })}
         style={
           isPlay
             ? { animationDuration: `${3 - speed}s` }
@@ -72,9 +60,9 @@ const Obstacle = () => {
         ref={obstacle1Ref}
       />
       <img
-        src={obstacle2}
+        src={koopa}
         alt=""
-        className={classNames("obstacle2", {"obstacle2-move": isPlay})}
+        className={classNames("obstacle2", { "obstacle2-move": isPlay })}
         style={
           isPlay
             ? { animationDuration: `${6 - speed}s` }
